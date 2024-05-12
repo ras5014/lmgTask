@@ -26,7 +26,7 @@ const ToolBar = ({ lastSelectedItem }) => {
         children: [],
       });
       if (response.status === 200) {
-        console.log("Category Created Successfully");
+        console.log("Category Created Successfully"); // Kept console.logs for debugging & latter convert to toast messages
       }
       console.log(response);
     } catch (error) {
@@ -54,7 +54,6 @@ const ToolBar = ({ lastSelectedItem }) => {
   };
 
   const handleSubCategory = async () => {
-    // Add Sub Category to backend
     console.log("Adding Sub Category to Category with ID: ", lastSelectedItem);
     try {
       const response = await axios.post(`${HOST}/category/createSubCategory`, {

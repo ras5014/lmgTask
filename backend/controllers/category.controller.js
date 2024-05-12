@@ -59,10 +59,8 @@ const editCategory = async (req, res) => {
       return res.status(404).json({ message: "Category not found" });
     }
 
-    // Update the category's label
     category.label = newLabel;
 
-    // Save the updated category
     await category.save();
 
     res.status(200).json(category);
@@ -71,6 +69,7 @@ const editCategory = async (req, res) => {
   }
 };
 
+// Delete a category
 const deleteCategory = async (req, res) => {
   try {
     const categoryId = req.body.id;

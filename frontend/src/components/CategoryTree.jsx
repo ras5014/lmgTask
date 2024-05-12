@@ -9,6 +9,7 @@ import ToolBar from "./ToolBar";
 
 import Typography from "@mui/material/Typography";
 
+// Helper function to convert flat data to tree data for MUI RichTreeView
 function convertData(inputData) {
   const dataMap = inputData.reduce((acc, item) => {
     acc[item._id] = { id: item._id, label: item.label, children: [] };
@@ -32,22 +33,6 @@ function convertData(inputData) {
 
 export default function TrackItemSelectionToggle() {
   const [lastSelectedItem, setLastSelectedItem] = useState(null);
-  // const [data1, setData1] = useState(null);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axios.get(`${HOST}/category/getData`);
-  //       const formattedData = convertData(response.data);
-  //       setData(formattedData);
-  //       console.log("Formatted data: ", formattedData);
-  //     } catch (error) {
-  //       console.error("Error fetching data: ", error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
 
   // React-Query to fetch Data
   const queryClient = useQueryClient();

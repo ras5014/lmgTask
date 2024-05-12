@@ -10,6 +10,5 @@ const CategorySchema = new mongoose.Schema({
   children: [],
 });
 
-// Create and export the model for the parent schema
 const Category = mongoose.model("category", CategorySchema);
 module.exports = Category;
