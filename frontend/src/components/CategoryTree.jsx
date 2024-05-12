@@ -10,16 +10,13 @@ import ToolBar from "./ToolBar";
 import Typography from "@mui/material/Typography";
 
 function convertData(inputData) {
-  // Create a map of id to data for easy access
   const dataMap = inputData.reduce((acc, item) => {
     acc[item._id] = { id: item._id, label: item.label, children: [] };
     return acc;
   }, {});
 
-  // Create a set of all child IDs
   const childIds = new Set(inputData.flatMap((item) => item.children));
 
-  // Populate the children arrays
   inputData.forEach((item) => {
     item.children.forEach((childId) => {
       if (dataMap[childId]) {
@@ -28,10 +25,8 @@ function convertData(inputData) {
     });
   });
 
-  // Return the values of the data map as an array
   // return Object.values(dataMap);
 
-  // Return only elements whose IDs are not in the set of child IDs
   return Object.values(dataMap).filter((item) => !childIds.has(item.id));
 }
 
@@ -72,20 +67,20 @@ export default function TrackItemSelectionToggle() {
 
   return (
     <>
-      <ToolBar lastSelectedItem={lastSelectedItem} />
-      <Stack spacing={2}>
-        {/* <Typography>
-          {lastSelectedItem == null
-            ? "No item selection recorded"
-            : `Last selected item: ${lastSelectedItem}`}
-        </Typography> */}
-        <Box sx={{ minHeight: 200, minWidth: 300, flexGrow: 1 }}>
-          <RichTreeView
-            items={data ? data : []}
-            onItemSelectionToggle={handleItemSelectionToggle}
-          />
-        </Box>
-      </Stack>
+      {isLoading && <Typography>Loading...</Typography>}
+      {data && (
+        <div>
+          <ToolBar lastSelectedItem={lastSelectedItem} />
+          <Stack spacing={2}>
+            <Box sx={{ minHeight: 200, minWidth: 300, flexGrow: 1 }}>
+              <RichTreeView
+                items={data ? data : []}
+                onItemSelectionToggle={handleItemSelectionToggle}
+              />
+            </Box>
+          </Stack>
+        </div>
+      )}
     </>
   );
 }
