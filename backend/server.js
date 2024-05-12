@@ -5,7 +5,7 @@ require("dotenv").config();
 const dbConnection = require("./dbconfig");
 const routes = require("./routes");
 
-export const app = express();
+const app = express();
 
 // Middleware
 app.use(bodyParser.json());
