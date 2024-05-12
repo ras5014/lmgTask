@@ -5,7 +5,9 @@ const Category = require("../models/category.model");
 const getData = async (req, res) => {
   try {
     const categories = await Category.find();
-    res.json(categories);
+    if (categories.length === 0)
+      return res.status(404).json({ message: "No categories found" });
+    res.status(200).json(categories);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -16,9 +18,9 @@ const createCategory = async (req, res) => {
   try {
     const category = new Category(req.body);
     await category.save();
-    res.status(201).json(category);
+    res.status(200).json(category);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -35,12 +37,12 @@ const createSubCategory = async (req, res) => {
     await parentCategory.save();
 
     if (parentCategory) {
-      res.status(201).json(parentCategory);
+      res.status(200).json(parentCategory);
     } else {
       res.status(404).json({ message: "Parent category not found" });
     }
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -63,7 +65,7 @@ const editCategory = async (req, res) => {
     // Save the updated category
     await category.save();
 
-    res.json(category);
+    res.status(200).json(category);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -85,9 +87,9 @@ const deleteCategory = async (req, res) => {
     );
 
     await Category.deleteOne({ _id: categoryId });
-    res.json({ message: "Category deleted successfully" });
+    res.status(200).json({ message: "Category deleted successfully" });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
