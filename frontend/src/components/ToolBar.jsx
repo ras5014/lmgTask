@@ -1,15 +1,96 @@
-import { useState } from "react";
+import { Children, useEffect, useState } from "react";
 import { IconButton, Button, Input } from "@mui/material";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import axios from "axios";
+const HOST = import.meta.env.VITE_HOST;
+import { useQueryClient } from "@tanstack/react-query";
 
-const ToolBar = () => {
+const ToolBar = ({ lastSelectedItem }) => {
   const [val, setVal] = useState("");
   const [addSubCategory, setAddSubCategory] = useState(false);
   const [editCategory, setEditCategory] = useState(false);
   const [deleteCategory, setDeleteCategory] = useState(false);
   const [createNewCategory, setCreateNewCategory] = useState(false);
+
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    queryClient.invalidateQueries("getData");
+  }, [createNewCategory, deleteCategory, editCategory, addSubCategory]);
+
+  const handleCreateCategory = async () => {
+    try {
+      const response = await axios.post(`${HOST}/category/createCategory`, {
+        label: val,
+        children: [],
+      });
+      if (response.status === 200) {
+        console.log("Category Created Successfully");
+      }
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+    }
+
+    setCreateNewCategory(false);
+    setVal("");
+  };
+
+  const handleDelete = async () => {
+    try {
+      const response = await axios.delete(`${HOST}/category/deleteCategory`, {
+        data: { id: lastSelectedItem },
+      });
+      if (response.status === 200) {
+        console.log("Category Deleted Successfully");
+      }
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+    }
+
+    setDeleteCategory((prevState) => !prevState);
+  };
+
+  const handleSubCategory = async () => {
+    // Add Sub Category to backend
+    console.log("Adding Sub Category to Category with ID: ", lastSelectedItem);
+    try {
+      const response = await axios.post(`${HOST}/category/createSubCategory`, {
+        id: lastSelectedItem,
+        label: val,
+      });
+      if (response.status === 200) {
+        console.log("Sub Category Added Successfully");
+      }
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+    }
+
+    setAddSubCategory((prevState) => !prevState);
+    setVal("");
+  };
+
+  const handleEditCategory = async () => {
+    try {
+      const response = await axios.put(`${HOST}/category/editCategory`, {
+        id: lastSelectedItem,
+        label: val,
+      });
+      if (response.status === 200) {
+        console.log("Category Edited Successfully");
+      }
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+    }
+
+    setEditCategory((prevState) => !prevState);
+    setVal("");
+  };
+
   return (
     <div className="row">
       <IconButton
@@ -20,16 +101,39 @@ const ToolBar = () => {
       </IconButton>
       {addSubCategory && (
         <>
-          <Input placeholder="Add Sub Category" />
-          <Button variant="contained" size="small">
+          <Input
+            placeholder="Add Sub Category"
+            value={val}
+            onChange={(e) => {
+              setVal(e.target.value);
+            }}
+          />
+          <Button variant="contained" size="small" onClick={handleSubCategory}>
             Add
           </Button>
         </>
       )}
-      <IconButton aria-label="edit">
+      <IconButton
+        aria-label="edit"
+        onClick={() => setEditCategory((prevState) => !prevState)}
+      >
         <EditIcon style={{ color: "#1565C0" }} />
       </IconButton>
-      <IconButton aria-label="delete">
+      {editCategory && (
+        <>
+          <Input
+            placeholder="Edit Category"
+            value={val}
+            onChange={(e) => {
+              setVal(e.target.value);
+            }}
+          />
+          <Button variant="contained" size="small" onClick={handleEditCategory}>
+            Update
+          </Button>
+        </>
+      )}
+      <IconButton aria-label="delete" onClick={handleDelete}>
         <DeleteIcon style={{ color: "red" }} />
       </IconButton>
       <Button
@@ -41,11 +145,15 @@ const ToolBar = () => {
       </Button>{" "}
       {createNewCategory && (
         <>
-          <Input placeholder="Add New Category" />
+          <Input
+            placeholder="Add New Category"
+            value={val}
+            onChange={(e) => setVal(e.target.value)}
+          />
           <Button
             variant="contained"
             size="small"
-            // onClick={handleCreateCategory}
+            onClick={handleCreateCategory}
           >
             Add
           </Button>
