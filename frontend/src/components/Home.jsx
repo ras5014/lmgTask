@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "../store/user-slice";
 import { useNavigate } from "react-router-dom";
 import { Button, Box } from "@mui/material";
+import SignIn from "./SignIn";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -18,22 +19,31 @@ const Home = () => {
   }, [user]);
 
   return (
-    <div>
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => {
-            dispatch(logoutUser());
-            console.log(user);
-          }}
-        >
-          Logout
-        </Button>
-      </Box>
-      <Header />
-      <CategoryTree />
-    </div>
+    <>
+      {!user.email && <SignIn />}
+      {user.email && (
+        <div>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => {
+                dispatch(logoutUser());
+                console.log(user);
+              }}
+            >
+              Logout
+            </Button>
+          </Box>
+          <Header />
+          <CategoryTree />
+        </div>
+      )}
+    </>
   );
 };
 
