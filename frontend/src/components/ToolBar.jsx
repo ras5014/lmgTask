@@ -7,8 +7,9 @@ import axios from "axios";
 const HOST = import.meta.env.VITE_HOST;
 import { useQueryClient } from "@tanstack/react-query";
 
-const ToolBar = ({ lastSelectedItem }) => {
+const ToolBar = ({ lastSelectedItem, selectedItem }) => {
   const [val, setVal] = useState("");
+  const [editVal, setEditVal] = useState(selectedItem);
   const [addSubCategory, setAddSubCategory] = useState(false);
   const [editCategory, setEditCategory] = useState(false);
   const [deleteCategory, setDeleteCategory] = useState(false);
@@ -18,6 +19,10 @@ const ToolBar = ({ lastSelectedItem }) => {
   useEffect(() => {
     queryClient.invalidateQueries("getData");
   }, [createNewCategory, deleteCategory, editCategory, addSubCategory]);
+
+  useEffect(() => {
+    setEditVal(selectedItem);
+  }, [selectedItem]);
 
   const handleCreateCategory = async () => {
     try {
@@ -76,7 +81,7 @@ const ToolBar = ({ lastSelectedItem }) => {
     try {
       const response = await axios.put(`${HOST}/category/editCategory`, {
         id: lastSelectedItem,
-        label: val,
+        label: editVal,
       });
       if (response.status === 200) {
         console.log("Category Edited Successfully");
@@ -87,7 +92,6 @@ const ToolBar = ({ lastSelectedItem }) => {
     }
 
     setEditCategory((prevState) => !prevState);
-    setVal("");
   };
 
   return (
@@ -121,10 +125,11 @@ const ToolBar = ({ lastSelectedItem }) => {
       {editCategory && (
         <>
           <Input
-            placeholder="Edit Category"
-            value={val}
+            // placeholder="Edit Category"
+            defaultValue={editVal}
+            value={editVal}
             onChange={(e) => {
-              setVal(e.target.value);
+              setEditVal(e.target.value);
             }}
           />
           <Button variant="contained" size="small" onClick={handleEditCategory}>

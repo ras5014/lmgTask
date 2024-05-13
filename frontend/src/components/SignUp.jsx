@@ -12,6 +12,10 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import axios from "axios";
+const HOST = import.meta.env.VITE_HOST;
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
 
 function Copyright(props) {
   return (
@@ -36,13 +40,25 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function SignUp() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+  const navigate = useNavigate();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = async (formData) => {
+    try {
+      const response = await axios.post(`${HOST}/signup`, formData);
+
+      if (response.status === 200) {
+        console.log("User created successfully"); // Change it to toast message
+        navigate("/signin");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -66,59 +82,75 @@ export default function SignUp() {
           <Box
             component="form"
             noValidate
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
                   autoComplete="given-name"
-                  name="firstName"
+                  {...register("fname", { required: true })}
+                  name="fname"
                   required
                   fullWidth
                   id="firstName"
                   label="First Name"
                   autoFocus
                 />
+                {errors.fname && (
+                  <span style={{ color: "red", fontSize: "0.8rem" }}>
+                    First Name is required
+                  </span>
+                )}
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   required
                   fullWidth
-                  id="lastName"
+                  {...register("lname", { required: true })}
+                  id="lastname"
                   label="Last Name"
-                  name="lastName"
+                  name="lname"
                   autoComplete="family-name"
                 />
+                {errors.lname && (
+                  <span style={{ color: "red", fontSize: "0.8rem" }}>
+                    Last Name is required
+                  </span>
+                )}
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   required
                   fullWidth
+                  {...register("email", { required: true })}
                   id="email"
                   label="Email Address"
                   name="email"
                   autoComplete="email"
                 />
+                {errors.email && (
+                  <span style={{ color: "red", fontSize: "0.8rem" }}>
+                    Email is required
+                  </span>
+                )}
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   required
                   fullWidth
+                  {...register("password", { required: true })}
                   name="password"
                   label="Password"
                   type="password"
                   id="password"
                   autoComplete="new-password"
                 />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={
-                    <Checkbox value="allowExtraEmails" color="primary" />
-                  }
-                  label="I want to receive inspiration, marketing promotions and updates via email."
-                />
+                {errors.password && (
+                  <span style={{ color: "red", fontSize: "0.8rem" }}>
+                    Password is required
+                  </span>
+                )}
               </Grid>
             </Grid>
             <Button
@@ -131,7 +163,11 @@ export default function SignUp() {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link
+                  href="#"
+                  variant="body2"
+                  onClick={() => navigate("/signin")}
+                >
                   Already have an account? Sign in
                 </Link>
               </Grid>

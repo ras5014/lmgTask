@@ -3,8 +3,6 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -12,6 +10,12 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setUser } from "../store/user-slice";
+const HOST = import.meta.env.VITE_HOST;
 
 function Copyright(props) {
   return (
@@ -36,13 +40,26 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function SignIn() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = async (formData) => {
+    try {
+      const response = await axios.post(`${HOST}/signin`, formData);
+
+      if (response.status === 200) {
+        console.log("User logged in successfully"); // Change it to toast message
+        dispatch(setUser(response.data));
+        navigate("/");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -65,11 +82,12 @@ export default function SignIn() {
           </Typography>
           <Box
             component="form"
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             noValidate
             sx={{ mt: 1 }}
           >
             <TextField
+              {...register("email", { required: true })}
               margin="normal"
               required
               fullWidth
@@ -79,7 +97,13 @@ export default function SignIn() {
               autoComplete="email"
               autoFocus
             />
+            {errors.email && (
+              <span style={{ color: "red", fontSize: "0.8rem" }}>
+                Email is required
+              </span>
+            )}
             <TextField
+              {...register("password", { required: true })}
               margin="normal"
               required
               fullWidth
@@ -89,6 +113,11 @@ export default function SignIn() {
               id="password"
               autoComplete="current-password"
             />
+            {errors.password && (
+              <span style={{ color: "red", fontSize: "0.8rem" }}>
+                Password is required
+              </span>
+            )}
             <Button
               type="submit"
               fullWidth
@@ -98,13 +127,12 @@ export default function SignIn() {
               Sign In
             </Button>
             <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link
+                  href="#"
+                  variant="body2"
+                  onClick={() => navigate("/signup")}
+                >
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
@@ -112,6 +140,12 @@ export default function SignIn() {
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
+        <Grid container>
+          <Grid item>
+            <h2>Email for demo = test@gmail.com</h2>
+            <h2>Password for demo = test</h2>
+          </Grid>
+        </Grid>
       </Container>
     </ThemeProvider>
   );

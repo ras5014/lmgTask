@@ -33,6 +33,7 @@ function convertData(inputData) {
 
 export default function TrackItemSelectionToggle() {
   const [lastSelectedItem, setLastSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   // React-Query to fetch Data
   const queryClient = useQueryClient();
@@ -46,6 +47,7 @@ export default function TrackItemSelectionToggle() {
 
   const handleItemSelectionToggle = (event, itemId, isSelected) => {
     if (isSelected) {
+      setSelectedItem(event.target.innerText);
       setLastSelectedItem(itemId);
     }
   };
@@ -55,7 +57,10 @@ export default function TrackItemSelectionToggle() {
       {isLoading && <Typography>Loading...</Typography>}
       {data && (
         <div>
-          <ToolBar lastSelectedItem={lastSelectedItem} />
+          <ToolBar
+            lastSelectedItem={lastSelectedItem}
+            selectedItem={selectedItem}
+          />
           <Stack spacing={2}>
             <Box sx={{ minHeight: 200, minWidth: 300, flexGrow: 1 }}>
               <RichTreeView
