@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 // Signup
 const signup = async (req, res) => {
@@ -24,13 +25,18 @@ const signup = async (req, res) => {
 const signin = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email });
+    let user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     if (await bcrypt.compare(password, user.password)) {
-      res.status(200).json({ message: "Signin Successful", data: user });
+      const token = jwt.sign({ email }, process.env.JWT_SECRET, {
+        expiresIn: "1h",
+      });
+      const { password, ...userWithoutPassword } = user.toObject();
+      user = userWithoutPassword;
+      res.status(200).json({ message: "Signin Successful", data: user, token });
     } else {
       res.status(401).json({ message: "Invalid credentials" });
     }
