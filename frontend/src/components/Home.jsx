@@ -33,7 +33,6 @@ const Home = () => {
               color="error"
               onClick={() => {
                 dispatch(logoutUser());
-                console.log(user);
               }}
             >
               Logout

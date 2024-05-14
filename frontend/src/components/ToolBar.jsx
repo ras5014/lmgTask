@@ -6,6 +6,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import axios from "axios";
 const HOST = import.meta.env.VITE_HOST;
 import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 const ToolBar = ({ lastSelectedItem, selectedItem }) => {
   const [val, setVal] = useState("");
@@ -31,11 +32,19 @@ const ToolBar = ({ lastSelectedItem, selectedItem }) => {
         children: [],
       });
       if (response.status === 200) {
-        console.log("Category Created Successfully"); // Kept console.logs for debugging & latter convert to toast messages
+        toast.success("Category Created Successfully", {
+          duration: 4000,
+        });
+      } else {
+        toast.error("Error Creating Category", {
+          duration: 4000,
+        });
       }
-      console.log(response);
     } catch (error) {
       console.error(error);
+      toast.error("Error Creating Category", {
+        duration: 4000,
+      });
     }
 
     setCreateNewCategory(false);
@@ -48,11 +57,19 @@ const ToolBar = ({ lastSelectedItem, selectedItem }) => {
         data: { id: lastSelectedItem },
       });
       if (response.status === 200) {
-        console.log("Category Deleted Successfully");
+        toast.success("Category Deleted Successfully", {
+          duration: 4000,
+        });
+      } else {
+        toast.error("Error Deleting Category", {
+          duration: 4000,
+        });
       }
-      console.log(response);
     } catch (error) {
       console.error(error);
+      toast.error("Error Deleting Category", {
+        duration: 4000,
+      });
     }
 
     setDeleteCategory((prevState) => !prevState);
@@ -66,11 +83,19 @@ const ToolBar = ({ lastSelectedItem, selectedItem }) => {
         label: val,
       });
       if (response.status === 200) {
-        console.log("Sub Category Added Successfully");
+        toast.success("Sub Category Added Successfully", {
+          duration: 4000,
+        });
+      } else {
+        toast.error("Error Adding Sub Category", {
+          duration: 4000,
+        });
       }
-      console.log(response);
     } catch (error) {
       console.error(error);
+      toast.error("Error Adding Sub Category", {
+        duration: 4000,
+      });
     }
 
     setAddSubCategory((prevState) => !prevState);
@@ -84,11 +109,19 @@ const ToolBar = ({ lastSelectedItem, selectedItem }) => {
         label: editVal,
       });
       if (response.status === 200) {
-        console.log("Category Edited Successfully");
+        toast.success("Category Edited Successfully", {
+          duration: 4000,
+        });
+      } else {
+        toast.error("Error Editing Category", {
+          duration: 4000,
+        });
       }
-      console.log(response);
     } catch (error) {
       console.error(error);
+      toast.error("Error Editing Category", {
+        duration: 4000,
+      });
     }
 
     setEditCategory((prevState) => !prevState);
