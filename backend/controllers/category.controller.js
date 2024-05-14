@@ -79,6 +79,20 @@ const deleteCategory = async (req, res) => {
       return res.status(404).json({ message: "Category not found" });
     }
 
+    async function removeCategoryBelow(category) {
+      for (let childId of category.children) {
+        const child = await Category.findById(childId);
+        await Category.updateMany(
+          { children: childId },
+          { $pull: { children: childId } }
+        );
+        removeCategoryBelow(child);
+        await Category.deleteOne({ _id: childId });
+      }
+    }
+    removeCategoryBelow(category);
+
+    // Remove the category from its parent's children array
     const newId = new mongoose.Types.ObjectId(categoryId);
     await Category.updateMany(
       { children: newId },
