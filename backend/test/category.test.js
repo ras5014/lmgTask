@@ -19,12 +19,13 @@ describe("deleteCategory", () => {
   it("should delete a category successfully", async () => {
     const mockCategory = {
       _id: new mongoose.Types.ObjectId(),
-      deleteOne: jest.fn(),
+      label: "Test",
+      children: [],
     };
     Category.findById.mockResolvedValue(mockCategory);
 
     const req = { body: { id: mockCategory._id } };
-    const res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+    const res = { status: jest.fn(), json: jest.fn() };
 
     await deleteCategory(req, res);
 

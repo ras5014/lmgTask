@@ -1,7 +1,7 @@
 const Header = () => {
   return (
     <div>
-      <h1>Landmark Group!</h1>
+      <h1>Ecommerce Category-Management Admin</h1>
     </div>
   );
 };
